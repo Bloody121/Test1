@@ -3,6 +3,13 @@ language:
 
 before_install:
   - pip install --user cpp-coveralls
+  
+addons:
+  sonarcloud:
+    organization: "bloody121-github" # the key of the org you chose at step #3
+    token:
+      secure: $SONAR_KEY # encrypted value of your token
+
 
 script:
   - qmake
@@ -11,6 +18,11 @@ script:
 
 after_success:
   - coveralls --root . -E ".*external.*" -E ".*tests.*"
-
+  - build-wrapper-linux-x86-64 --out-dir bw-output make clean all
+  - sonar-scanner
+  
+  cache:
+    directories:
+      - '$HOME/.sonar/cache'
 notifications:
   email: false
